@@ -1,34 +1,72 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply from: 'gradle/property_helper.gradle'
-apply from: 'gradle/property_loader.gradle'
+buildscript {
+    repositories {
+        maven {
+            name = "ForgeGradle"
+            url = "https://maven.minecraftforge.net/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
+    }
+}
 
-// Load mod related properties
-ext.modName = getRequiredString('mod_name')
-ext.modAuthor = getRequiredString('mod_author')
-ext.modId = getRequiredString('mod_id')
-ext.modCredits = getDefaultString('mod_credits', ext.modAuthor)
-ext.modDescription = getOptionalString('mod_description')
-ext.modChangelog = getOptionalString('mod_changelog')
-ext.modHomepage = getOptionalString('mod_homepage')
-ext.modSource = getOptionalString('mod_source')
-ext.modIssues = getOptionalString('mod_issues')
+apply plugin: 'net.minecraftforge.gradle'
 
-// Load Minecraft specific properties
-ext.mcVersion = getRequiredString('minecraft_version')
+group = 'net.darkhax.dimstages'
+version = '3.0'
+archivesBaseName = 'dimstages'
 
-// Load build-time modules
-apply from: 'gradle/build_number.gradle'
-apply from: 'gradle/git_changelog.gradle'
-apply from: 'gradle/patreon.gradle'
-apply from: 'gradle/common_manifest.gradle'
-apply from: 'gradle/common_artifacts.gradle'
-apply from: 'gradle/forge.gradle'
-apply from: 'gradle/dependencies.gradle'
-apply from: 'gradle/minify_jsons.gradle'
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
-// Load publishing modules
-apply from: 'gradle/maven.gradle'
-apply from: 'gradle/signing.gradle'
-apply from: 'gradle/curseforge.gradle'
-apply from: 'gradle/version_checker.gradle'
+minecraft {
+    mappings channel: 'official', version: '1.18.2'
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
+}
+
+repositories {
+    maven { url 'https://maven.blamejared.com' }
+    maven { url 'https://dvs1.progwml6.com/files/maven' }
+    mavenCentral()
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.18.2-40.2.4'
+
+    // Add CraftTweaker dependency (example version)
+    // You may need to check the exact version and repo for CraftTweaker for 1.18.2
+    implementation fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.211')
+
+    // Add Gamestages dependency (example version)
+    implementation fg.deobf('net.darkhax.gamestages:GameStages-Forge-1.18.2:8.1.3')
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    manifest {
+        attributes([
+            "Specification-Title": "DimensionStages",
+            "Specification-Vendor": "Darkhax",
+            "Specification-Version": "1",
+            "Implementation-Title": "DimensionStages",
+            "Implementation-Version": version,
+            "Implementation-Vendor": "Darkhax",
+            "FMLCorePluginContainsFMLMod": "true"
+        ])
+    }
+}

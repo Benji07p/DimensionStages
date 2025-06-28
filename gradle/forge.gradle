@@ -43,7 +43,7 @@ def remapRefmap = getDefaultBoolean('mixin_remap_refmap')
 def remapRefmapFile = getDefaultString('mixin_remap_refmap_file', "${projectDir}/build/createSrgToMcp/output.srg")
 
 archivesBaseName = "${mod_name}-${minecraft_version}"
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
 
@@ -159,31 +159,30 @@ dependencies {
 
 processResources {
 
-    def buildProps = project.properties.clone()
+    from(sourceSets.main.resources.srcDirs) {
+    
+        include 'META-INF/mods.toml'
+        include 'pack.mcmeta'
+        
+        def buildProps = project.properties.clone()
+        
+        if (project.ext.has('patreon') && project.ext.patreon.pledges && !project.ext.patreon.pledges.isEmpty()) {
+        
+            def supporters = new ArrayList<String>()
 
-    if (project.ext.has('patreon') && project.ext.patreon.pledges && !project.ext.patreon.pledges.isEmpty()) {
+            for (entry in project.ext.patreon.pledges) {
 
-        def supporters = new ArrayList<String>()
+                def pledge = entry.getValue();
 
-        for (entry in project.ext.patreon.pledges) {
+                if (pledge.isValid()) {
 
-            def pledge = entry.getValue();
-
-            if (pledge.isValid()) {
-
-                supporters.add(pledge.getDisplayName())
+                    supporters.add(pledge.getDisplayName())
+                }
             }
+            
+            buildProps.put('modCredits', "${project.ext.modCredits} and the supporters on Patreon: ${supporters.join(', ')}") 
         }
-
-        buildProps.put('modCredits', "${project.ext.modCredits} and the supporters on Patreon: ${supporters.join(', ')}")
-    }
-
-    // Replace FML's magic file.jarVersion string with the correct version at
-    // build time.
-    buildProps.put('file', [jarVersion: project.version])
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-
+        
         expand buildProps
     }
 }
@@ -237,6 +236,34 @@ task runServer() {
     description = 'Runs the game server in developer/debug mode.'
     dependsOn modName.replaceAll("\\s","") + 'Server'
 }
+
+// Forge's Jar Signer
+def canSignJar = project.hasProperty('keyStore') && project.hasProperty('keyStorePass') && project.hasProperty('keyStoreKeyPass') && project.hasProperty('keyStoreAlias')
+
+// task signJar(type: net.minecraftforge.gradle.common.task.SignJar, dependsOn: jar) {
+    
+//     onlyIf {
+    
+//         canSignJar
+//     }
+    
+//     if (canSignJar) {
+    
+//         keyStore = project.findProperty('keyStore')
+//         alias = project.findProperty('keyStoreAlias')
+//         storePass = project.findProperty('keyStorePass')
+//         keyPass = project.findProperty('keyStoreKeyPass')
+//         inputFile = jar.archivePath
+//         outputFile = jar.archivePath
+        
+//         build.dependsOn signJar
+//     }
+    
+//     else {
+    
+//         project.logger.warn('Jar signing is disabled for this build. One or more keyStore properties are not specified.')
+//     }
+// }
 
 task setupDebugRunConfigs() {
 

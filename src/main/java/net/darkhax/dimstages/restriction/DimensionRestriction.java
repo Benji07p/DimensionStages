@@ -5,13 +5,14 @@ import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public abstract class DimensionRestriction implements IDimensionRestriction {
     
     /**
      * The default restriction message that is displayed to players when they get restricted.
      */
-    public static final Component DEFAULT_MESSAGE = Component.translatable("message.dimstages.noentry");
+    public static final Component DEFAULT_MESSAGE = new TranslatableComponent("message.dimstages.noentry");
     
     /**
      * The actual restriction message to display when a player's access to a dimension is

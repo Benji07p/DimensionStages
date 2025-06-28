@@ -25,7 +25,6 @@ DimensionStages.stageDimension("minecraft:the_nether", "one");
 // Example 1
 // DimensionStages.stageDimensionWithMessage("minecraft:the_end", "Come back later.", "two");
 // 
-// Example 2
-// WARNING! For this example you need to import crafttweaker.api.text.Component
-// DimensionStages.stageDimensionWithMessage("minecraft:the_nether", Component.translatable("message.dimstages.noentry"), "two", "three");
+// Example 2 
+// DimensionStages.stageDimensionWithMessage("minecraft:the_nether", "Access denied.", "two", "three");
 DimensionStages.stageDimensionWithMessage("minecraft:the_end", "The end is too scary, come back later.", "two");

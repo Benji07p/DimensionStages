@@ -1,10 +1,10 @@
 package net.darkhax.dimstages.compat.crt;
 
-import com.blamejared.crafttweaker.api.annotation.ZenRegister;
-import net.minecraft.network.chat.Component;
 import org.openzen.zencode.java.ZenCodeType;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import net.minecraft.network.chat.Component;
 
 import net.darkhax.dimstages.restriction.DimensionRestriction;
 
